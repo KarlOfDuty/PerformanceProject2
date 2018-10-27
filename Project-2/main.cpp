@@ -3,16 +3,19 @@
 #include <string>
 #include <time.h>
 
-float generateRand(int max) {
+float generateRand(int max)
+{
 	return (((float)rand() / (float)RAND_MAX)*max);
 }
 
-void createDataset(int datasetSize, int bufferSize, std::string datasetFilename) {
+void createDataset(int datasetSize, int bufferSize, std::string datasetFilename)
+{
 	std::ofstream out;
 	out.open(datasetFilename);
 	
 	std::string newLine = "";
-	for (int i = 0; i < bufferSize; i++){
+	for (int i = 0; i < bufferSize; i++)
+    {
 		out << newLine << std::fixed << generateRand(datasetSize);
 		newLine = "\n";
 	}
@@ -20,11 +23,12 @@ void createDataset(int datasetSize, int bufferSize, std::string datasetFilename)
 	out.close();
 }
 
-float* loadDataset(std::string datasetFilename, int bufferSize) {
+float* loadDataset(std::string datasetFilename, int bufferSize)
+{
 	float* newds = new float[bufferSize];
 
 	std::ifstream in;
-	in.open(datasetFilename);
+	in.open(datasetFilename); 
 	
 	int i = 0;
 	while (!in.eof())
@@ -35,48 +39,60 @@ float* loadDataset(std::string datasetFilename, int bufferSize) {
 	return newds;
 }
 
-float average(float ds[], int bufferSize) {
+float average(float ds[], int bufferSize)
+{
 	float total = 0.f;
-	for (int i = 0; i < bufferSize; i++){
+	for (int i = 0; i < bufferSize; i++)
+    {
 		total += ds[i];
 	}
 	return total / bufferSize;
 }
 
-float maxvalue(float ds[], int bufferSize) {
+float maxvalue(float ds[], int bufferSize)
+{
 	float max = 0.f;
-	for (int i = 0; i < bufferSize; i++){
-		if (ds[i] > max){
+	for (int i = 0; i < bufferSize; i++)
+    {
+		if (ds[i] > max)
+        {
 			max = ds[i];
 		}
 	}
 	return max;
 }
 
-float minvalue(float ds[], int bufferSize) {
+float minvalue(float ds[], int bufferSize)
+{
 	float min = FLT_MAX;
-	for (int i = 0; i < bufferSize; i++) {
-		if (ds[i] < min) {
+	for (int i = 0; i < bufferSize; i++)
+    {
+		if (ds[i] < min)
+        {
 			min = ds[i];
 		}
 	}
 	return min;
 }
 
-float* sortDataset(float* ds, int bufferSize) {
+float* sortDataset(float* ds, int bufferSize)
+{
 	//Deepcopy right?
 	float* sds = new float[bufferSize];
-	for (int i = 0; i < bufferSize; i++){
+	for (int i = 0; i < bufferSize; i++)
+    {
 		sds[i] = ds[i];
 	}
 
 	//Sort on SDS
 	float key;
 	int j;
-	for (int i = 1; i < bufferSize; i++){
+	for (int i = 1; i < bufferSize; i++)
+    {
 		key = sds[i];
 		j = i - 1;
-		while (j >= 0 && sds[j] > key){
+		while (j >= 0 && sds[j] > key)
+        {
 			sds[j + 1] = sds[j];
 			j = j - 1;
 		}
@@ -85,7 +101,8 @@ float* sortDataset(float* ds, int bufferSize) {
 	return sds;
 }
 
-void writeDataset(std::string OutputFilename, float sds[], int bufferSize, float avg, float min, float max) {
+void writeDataset(std::string OutputFilename, float sds[], int bufferSize, float avg, float min, float max)
+{
 	std::ofstream out;
 	out.open(OutputFilename);
 	
