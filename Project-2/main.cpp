@@ -172,56 +172,90 @@ bool fileExists(const std::string& name)
     return f.good();
 }
 
+void runTest(int datasetSize, int bufferSize)
+{
+	LARGE_INTEGER startTime;
+	LARGE_INTEGER endTime;
+
+	float avg = 0.0f;
+	float max = 0.0f;
+	float min = 0.0f;
+
+	double avgTimeMillisecond = 0.0;
+	double maxTimeMillisecond = 0.0;
+	double minTimeMillisecond = 0.0;
+	double sortTimeMillisecond = 0.0;
+	double writeTimeMillisecond = 0.0;
+
+	srand((unsigned int)time(0));
+
+	std::cout << "Starting test...\n";
+
+	// Loads the dataset
+	float* dataset = loadDataset("inputdata.txt", datasetSize, bufferSize);
+
+	// Performs calculations on the dataset
+	// Average
+	QueryPerformanceFrequency(&frequency);
+	QueryPerformanceCounter(&startTime);
+	avg = average(dataset, datasetSize);
+	QueryPerformanceCounter(&endTime);
+	avgTimeMillisecond = (endTime.QuadPart - startTime.QuadPart) * 1000.0 / frequency.QuadPart;
+	
+	// Max
+	QueryPerformanceCounter(&startTime);
+	max = maxvalue(dataset, datasetSize);
+	QueryPerformanceCounter(&endTime);
+	maxTimeMillisecond = (endTime.QuadPart - startTime.QuadPart) * 1000.0 / frequency.QuadPart;
+
+	// Min
+	QueryPerformanceCounter(&startTime);
+	min = minvalue(dataset, datasetSize);
+	QueryPerformanceCounter(&endTime);
+	minTimeMillisecond = (endTime.QuadPart - startTime.QuadPart) * 1000.0 / frequency.QuadPart;
+
+	// Sorts the dataset
+	QueryPerformanceCounter(&startTime);
+	float* sortedDataset = sortDataset(dataset, datasetSize);
+	QueryPerformanceCounter(&endTime);
+	sortTimeMillisecond = (endTime.QuadPart - startTime.QuadPart) * 1000.0 / frequency.QuadPart;
+
+	// Write the sorted list to file with results from calculations
+	QueryPerformanceCounter(&startTime);
+	writeDataset("outputdata.txt", sortedDataset, datasetSize, bufferSize, avg, min, max);
+	QueryPerformanceCounter(&endTime);
+	writeTimeMillisecond = (endTime.QuadPart - startTime.QuadPart) * 1000.0 / frequency.QuadPart;
+
+	// Write test results to file
+	std::ofstream out;
+	out.open("testResults-" + std::to_string(bufferSize) + ".txt");
+	out << "Average : " << avgTimeMillisecond << std::endl;
+	out << "Max : " << maxTimeMillisecond << std::endl;
+	out << "Min : " << minTimeMillisecond << std::endl;
+	out << "Sort : " << sortTimeMillisecond << std::endl;
+	out << "Write : " << writeTimeMillisecond << std::endl;
+	out.close();
+}
+
 int main()
 {
-    LARGE_INTEGER startTime;
-    LARGE_INTEGER endTime;
-
-    float avg = 0.0f;
-    float max = 0.0f;
-    float min = 0.0f;
-
-    double endTimeMillisecond = 0.0;
-
-    QueryPerformanceFrequency(&frequency);
-	srand((unsigned int)time(0));
-	
-	int datasetSize = 1024*100;
+	int datasetSize = 100000;
 	int bufferSize = 4;
 
-    // Creates the dataset if it does not exist
-    if (!fileExists("inputdata.txt"))
-    {
-        std::cout << "Creating dataset file...\n";
-	    createDataset(datasetSize, "inputdata.txt");
-        std::cout << "Done!\n";
-    }
+	// Creates the dataset if it does not exist
+	if (!fileExists("inputdata.txt"))
+	{
+		std::cout << "Creating dataset file...\n";
+		createDataset(datasetSize, "inputdata.txt");
+		std::cout << "Done!\n";
+	}
 
-    std::cout << "Starting test...\n";
-
-    // Sets high definition start time
-    QueryPerformanceCounter(&startTime);
-
-    // Loads the dataset
-	float* dataset = loadDataset("inputdata.txt", datasetSize, bufferSize);
+	for (int i = 0; i < 10; i++)
+	{
+		runTest(datasetSize, bufferSize);
+		bufferSize *= 2;
+	}
 	
-    // Performs calculations on the dataset
-	avg = average(dataset, datasetSize);
-	max = maxvalue(dataset, datasetSize);
-	min = minvalue(dataset, datasetSize);
-
-    // Sorts the dataset
-	float* sortedDataset = sortDataset(dataset, datasetSize);
-
-    // Write the sorted list to file with results from calculations
-	writeDataset("outputdata.txt", sortedDataset, datasetSize, bufferSize, avg, min, max);
-
-    // Sets high definition end time
-    QueryPerformanceCounter(&endTime);
-
-    endTimeMillisecond = (endTime.QuadPart - startTime.QuadPart) * 1000.0 / frequency.QuadPart;
-
-    std::cout << "Done!\nTime elapsed: " << endTimeMillisecond << "ms.\n";
     system("PAUSE");
 	return 0;
 }
