@@ -26,11 +26,15 @@ void createDataset(int datasetSize, std::string datasetFilename)
 	out.close();
 }
 
-float* loadDataset(std::string datasetFilename, int datasetSize)
+float* loadDataset(std::string datasetFilename, int datasetSize, int bufferSize)
 {
 	float* dataset = new float[datasetSize];
 
 	std::ifstream in;
+
+	char* buffer = new char[bufferSize];
+	in.rdbuf()->pubsetbuf(buffer, bufferSize);
+
 	in.open(datasetFilename); 
 	
 	int i = 0;
@@ -138,9 +142,13 @@ float* sortDataset(float* ds, int datasetSize)
 	return sds;
 }
 
-void writeDataset(std::string OutputFilename, float sds[], int datasetSize, float avg, float min, float max)
+void writeDataset(std::string OutputFilename, float sds[], int datasetSize, int bufferSize, float avg, float min, float max)
 {
 	std::ofstream out;
+
+	char* buffer = new char[bufferSize];
+	out.rdbuf()->pubsetbuf(buffer, bufferSize);
+
 	out.open(OutputFilename);
 	
 	out << "Average = " << avg << "\n";
@@ -175,6 +183,7 @@ int main()
 	srand((unsigned int)time(0));
 	
 	int datasetSize = 1024*100;
+	int bufferSize = 4; //4 Bytes = float size in bytes
 
     // Creates the dataset if it does not exist
     if (!fileExists("inputdata.txt"))
@@ -190,7 +199,7 @@ int main()
     QueryPerformanceCounter(&startTime);
 
     // Loads the dataset
-	float* dataset = loadDataset("inputdata.txt", datasetSize);
+	float* dataset = loadDataset("inputdata.txt", datasetSize, bufferSize);
 	
     // Performs calculations on the dataset
 	avg = average(dataset, datasetSize);
@@ -201,7 +210,7 @@ int main()
 	float* sortedDataset = sortDataset(dataset, datasetSize);
 
     // Write the sorted list to file with results from calculations
-	writeDataset("outputdata.txt", sortedDataset, datasetSize, avg, min, max);
+	writeDataset("outputdata.txt", sortedDataset, datasetSize, bufferSize, avg, min, max);
 
     // Sets high definition end time
     QueryPerformanceCounter(&endTime);
