@@ -11,24 +11,24 @@ float generateRand(int max)
 	return (((float)rand() / (float)RAND_MAX)*max);
 }
 
-void createDataset(int datasetSize, int bufferSize, std::string datasetFilename)
+void createDataset(int datasetSize, std::string datasetFilename)
 {
 	std::ofstream out;
 	out.open(datasetFilename);
 	
 	std::string newLine = "";
-	for (int i = 0; i < bufferSize; i++)
+	for (int i = 0; i < datasetSize; i++)
     {
-		out << newLine << std::fixed << generateRand(datasetSize);
+		out << newLine << std::fixed << generateRand(100);
 		newLine = "\n";
 	}
 
 	out.close();
 }
 
-float* loadDataset(std::string datasetFilename, int bufferSize)
+float* loadDataset(std::string datasetFilename, int datasetSize)
 {
-	float* dataset = new float[bufferSize];
+	float* dataset = new float[datasetSize];
 
 	std::ifstream in;
 	in.open(datasetFilename); 
@@ -42,20 +42,20 @@ float* loadDataset(std::string datasetFilename, int bufferSize)
 	return dataset;
 }
 
-float average(float ds[], int bufferSize)
+float average(float ds[], int datasetSize)
 {
 	float total = 0.f;
-	for (int i = 0; i < bufferSize; i++)
+	for (int i = 0; i < datasetSize; i++)
     {
 		total += ds[i];
 	}
-	return total / bufferSize;
+	return total / datasetSize;
 }
 
-float maxvalue(float ds[], int bufferSize)
+float maxvalue(float ds[], int datasetSize)
 {
 	float max = 0.f;
-	for (int i = 0; i < bufferSize; i++)
+	for (int i = 0; i < datasetSize; i++)
     {
 		if (ds[i] > max)
         {
@@ -65,10 +65,10 @@ float maxvalue(float ds[], int bufferSize)
 	return max;
 }
 
-float minvalue(float ds[], int bufferSize)
+float minvalue(float ds[], int datasetSize)
 {
 	float min = FLT_MAX;
-	for (int i = 0; i < bufferSize; i++)
+	for (int i = 0; i < datasetSize; i++)
     {
 		if (ds[i] < min)
         {
@@ -105,11 +105,11 @@ void quickSort(float* ds, int low, int high)
     }
 }
 
-float* sortDataset(float* ds, int bufferSize)
+float* sortDataset(float* ds, int datasetSize)
 {
 	//Deepcopy
-	float* sds = new float[bufferSize];
-	for (int i = 0; i < bufferSize; i++)
+	float* sds = new float[datasetSize];
+	for (int i = 0; i < datasetSize; i++)
     {
 		sds[i] = ds[i];
 	}
@@ -119,7 +119,7 @@ float* sortDataset(float* ds, int bufferSize)
 	    //Insertion Sort on SDS
 	    float key;
 	    int j;
-	    for (int i = 1; i < bufferSize; i++)
+	    for (int i = 1; i < datasetSize; i++)
         {
 		    key = sds[i];
 		    j = i - 1;
@@ -133,12 +133,12 @@ float* sortDataset(float* ds, int bufferSize)
     }
     else
     {
-        quickSort(sds, 0, bufferSize - 1);
+        quickSort(sds, 0, datasetSize - 1);
     }
 	return sds;
 }
 
-void writeDataset(std::string OutputFilename, float sds[], int bufferSize, float avg, float min, float max)
+void writeDataset(std::string OutputFilename, float sds[], int datasetSize, float avg, float min, float max)
 {
 	std::ofstream out;
 	out.open(OutputFilename);
@@ -147,7 +147,7 @@ void writeDataset(std::string OutputFilename, float sds[], int bufferSize, float
 	out << "Max = " << max << "\n";
 	out << "Min = " << min;
 
-	for (int i = 0; i < bufferSize; i++)
+	for (int i = 0; i < datasetSize; i++)
 	{
 		out << "\n" << std::fixed << sds[i];
 	}
@@ -174,14 +174,13 @@ int main()
     QueryPerformanceFrequency(&frequency);
 	srand((unsigned int)time(0));
 	
-	int datasetSize = 100; 
-	int bufferSize = 1024*100;
+	int datasetSize = 1024*100;
 
     // Creates the dataset if it does not exist
     if (!fileExists("inputdata.txt"))
     {
         std::cout << "Creating dataset file...\n";
-	    createDataset(datasetSize, bufferSize, "inputdata.txt");
+	    createDataset(datasetSize, "inputdata.txt");
         std::cout << "Done!\n";
     }
 
@@ -191,18 +190,18 @@ int main()
     QueryPerformanceCounter(&startTime);
 
     // Loads the dataset
-	float* dataset = loadDataset("inputdata.txt", bufferSize);
+	float* dataset = loadDataset("inputdata.txt", datasetSize);
 	
     // Performs calculations on the dataset
-	avg = average(dataset, bufferSize);
-	max = maxvalue(dataset, bufferSize);
-	min = minvalue(dataset, bufferSize);
+	avg = average(dataset, datasetSize);
+	max = maxvalue(dataset, datasetSize);
+	min = minvalue(dataset, datasetSize);
 
     // Sorts the dataset
-	float* sortedDataset = sortDataset(dataset, bufferSize);
+	float* sortedDataset = sortDataset(dataset, datasetSize);
 
     // Write the sorted list to file with results from calculations
-	writeDataset("outputdata.txt", sortedDataset, bufferSize, avg, min, max);
+	writeDataset("outputdata.txt", sortedDataset, datasetSize, avg, min, max);
 
     // Sets high definition end time
     QueryPerformanceCounter(&endTime);
