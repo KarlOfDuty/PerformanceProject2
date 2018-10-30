@@ -32,14 +32,13 @@ float* loadDataset(std::string datasetFilename, int datasetSize, int bufferSize)
 
 	std::ifstream in;
 
-	if (bufferSize != -1)
+	in.open(datasetFilename); 
+		if (bufferSize != -1)
 	{
 		char* buffer = new char[bufferSize];
 		in.rdbuf()->pubsetbuf(buffer, bufferSize);
 	}
 
-	in.open(datasetFilename); 
-	
 	int i = 0;
 	while (!in.eof())
 	{
