@@ -32,8 +32,11 @@ float* loadDataset(std::string datasetFilename, int datasetSize, int bufferSize)
 
 	std::ifstream in;
 
-	char* buffer = new char[bufferSize];
-	in.rdbuf()->pubsetbuf(buffer, bufferSize);
+	if (bufferSize != -1)
+	{
+		char* buffer = new char[bufferSize];
+		in.rdbuf()->pubsetbuf(buffer, bufferSize);
+	}
 
 	in.open(datasetFilename); 
 	
@@ -146,8 +149,11 @@ void writeDataset(std::string OutputFilename, float sds[], int datasetSize, int 
 {
 	std::ofstream out;
 
-	char* buffer = new char[bufferSize];
-	out.rdbuf()->pubsetbuf(buffer, bufferSize);
+	if (bufferSize != -1)
+	{
+		char* buffer = new char[bufferSize];
+		out.rdbuf()->pubsetbuf(buffer, bufferSize);
+	}
 
 	out.open(OutputFilename);
 	
@@ -183,7 +189,7 @@ int main()
 	srand((unsigned int)time(0));
 	
 	int datasetSize = 1024*100;
-	int bufferSize = 4; //4 Bytes = float size in bytes
+	int bufferSize = -1;
 
     // Creates the dataset if it does not exist
     if (!fileExists("inputdata.txt"))
