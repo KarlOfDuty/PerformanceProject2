@@ -4,6 +4,7 @@
 #include <time.h>
 #include <Windows.h>
 #define USE_INSERTIONSORT true
+#define BUFFER_TEST true
 LARGE_INTEGER frequency;
 
 float generateRand(int max)
@@ -189,8 +190,6 @@ void runTest(int datasetSize, int bufferSize)
 
 	srand((unsigned int)time(0));
 
-	std::cout << "Starting test...\n";
-
 	// Loads the dataset
 	float* dataset = loadDataset("inputdata.txt", datasetSize, bufferSize);
 
@@ -227,35 +226,66 @@ void runTest(int datasetSize, int bufferSize)
 	writeTimeMillisecond = (endTime.QuadPart - startTime.QuadPart) * 1000.0 / frequency.QuadPart;
 
 	// Write test results to file
-	std::ofstream out;
-	out.open("testResults-" + std::to_string(bufferSize) + ".txt");
-	out << "Average : " << avgTimeMillisecond << std::endl;
-	out << "Max : " << maxTimeMillisecond << std::endl;
-	out << "Min : " << minTimeMillisecond << std::endl;
-	out << "Sort : " << sortTimeMillisecond << std::endl;
-	out << "Write : " << writeTimeMillisecond << std::endl;
-	out.close();
+	if (BUFFER_TEST)
+	{
+		std::ofstream out;
+		out.open("bufferResults-" + std::to_string(bufferSize) + ".txt");
+		out << "Average : " << avgTimeMillisecond << std::endl;
+		out << "Max     : " << maxTimeMillisecond << std::endl;
+		out << "Min     : " << minTimeMillisecond << std::endl;
+		out << "Sort    : " << sortTimeMillisecond << std::endl;
+		out << "Write   : " << writeTimeMillisecond << std::endl;
+		out.close();
+	}
+	else
+	{
+		std::ofstream out;
+		out.open("datasetResults-" + std::to_string(datasetSize) + ".txt");
+		out << "Average : " << avgTimeMillisecond << std::endl;
+		out << "Max     : " << maxTimeMillisecond << std::endl;
+		out << "Min     : " << minTimeMillisecond << std::endl;
+		out << "Sort    : " << sortTimeMillisecond << std::endl;
+		out << "Write   : " << writeTimeMillisecond << std::endl;
+		out.close();
+	}
 }
 
 int main()
 {
-	int datasetSize = 100000;
-	int bufferSize = 4;
-
-	// Creates the dataset if it does not exist
-	if (!fileExists("inputdata.txt"))
+	if (BUFFER_TEST)
 	{
-		std::cout << "Creating dataset file...\n";
-		createDataset(datasetSize, "inputdata.txt");
-		std::cout << "Done!\n";
-	}
+		// Run buffer tests
+		std::cout << "Running buffer test!" << std::endl;
+		int datasetSize = 100000;
+		int bufferSize = 4;
 
-	for (int i = 0; i < 10; i++)
-	{
-		runTest(datasetSize, bufferSize);
-		bufferSize *= 2;
+		// Creates the dataset if it does not exist
+		if (!fileExists("inputdata.txt"))
+		{
+			std::cout << "Creating dataset file...\n";
+			createDataset(datasetSize, "inputdata.txt");
+			std::cout << "Done!\n";
+		}
+
+		for (int i = 0; i < 10; i++)
+		{
+			runTest(datasetSize, bufferSize);
+			bufferSize *= 2;
+		}
 	}
-	
-    system("PAUSE");
+	else
+	{
+		// Run dataset size tests
+		std::cout << "Running dataset test!" << std::endl;
+		int datasetSize = 1000;
+		int bufferSize = 2048;
+
+		for (int i = 0; i < 10; i++)
+		{
+			createDataset(datasetSize, "inputdata.txt");
+			runTest(datasetSize, bufferSize);
+			datasetSize *= 2;
+		}
+	}
 	return 0;
 }
