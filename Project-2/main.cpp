@@ -149,13 +149,12 @@ void writeDataset(std::string OutputFilename, float sds[], int datasetSize, int 
 {
 	std::ofstream out;
 
+	out.open(OutputFilename);
 	if (bufferSize != -1)
 	{
 		char* buffer = new char[bufferSize];
 		out.rdbuf()->pubsetbuf(buffer, bufferSize);
 	}
-
-	out.open(OutputFilename);
 
 	out << "Average = " << avg << "\n";
 	out << "Max = " << max << "\n";
