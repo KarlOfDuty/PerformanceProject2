@@ -145,11 +145,11 @@ float* sortDataset(float* ds, int datasetSize)
 	return sds;
 }
 
-void writeDataset(std::string OutputFilename, float sds[], int datasetSize, int bufferSize, float avg, float min, float max)
+void writeDataset(std::string outputFilename, float sds[], int datasetSize, int bufferSize, float avg, float min, float max)
 {
 	std::ofstream out;
 
-	out.open(OutputFilename);
+	out.open(outputFilename);
 	if (bufferSize != -1)
 	{
 		char* buffer = new char[bufferSize];
@@ -188,7 +188,7 @@ int main()
 	srand((unsigned int)time(0));
 	
 	int datasetSize = 1024*100;
-	int bufferSize = -1;
+	int bufferSize = 4;
 
     // Creates the dataset if it does not exist
     if (!fileExists("inputdata.txt"))
