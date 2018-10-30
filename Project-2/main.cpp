@@ -4,7 +4,6 @@
 #include <time.h>
 #include <Windows.h>
 #define USE_INSERTIONSORT true
-#define USE_STRINGADDITION true
 LARGE_INTEGER frequency;
 
 float generateRand(int max)
@@ -149,7 +148,6 @@ float* sortDataset(float* ds, int datasetSize)
 void writeDataset(std::string OutputFilename, float sds[], int datasetSize, int bufferSize, float avg, float min, float max)
 {
 	std::ofstream out;
-    std::string outString = "";
 
 	if (bufferSize != -1)
 	{
@@ -159,30 +157,14 @@ void writeDataset(std::string OutputFilename, float sds[], int datasetSize, int 
 
 	out.open(OutputFilename);
 
-    if (USE_STRINGADDITION)
-    {
-        outString += "Average = "; outString.append(avg); outString += "\n";
-        outString += "Max = "; outString += max; outString += "\n";
-        outString += "Min = "; outString += min;
+	out << "Average = " << avg << "\n";
+	out << "Max = " << max << "\n";
+	out << "Min = " << min;
 
-	    for (int i = 0; i < datasetSize; i++)
-	    {
-            outString += "\n"; outString += sds[i];
-	    }
-
-        out << outString;
-    }
-    else
-    {
-	    out << "Average = " << avg << "\n";
-	    out << "Max = " << max << "\n";
-	    out << "Min = " << min;
-
-	    for (int i = 0; i < datasetSize; i++)
-	    {
-		    out << "\n" << std::fixed << sds[i];
-	    }
-    }
+	for (int i = 0; i < datasetSize; i++)
+	{
+		out << "\n" << std::fixed << sds[i];
+	}
 	out.close();
 }
 
