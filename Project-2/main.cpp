@@ -3,6 +3,7 @@
 #include <string>
 #include <time.h>
 #include <Windows.h>
+// Change optimisation between O2 and off in the project settings in order to test that improvement
 #define USE_INSERTIONSORT true
 #define BUFFER_TEST true
 LARGE_INTEGER frequency;
